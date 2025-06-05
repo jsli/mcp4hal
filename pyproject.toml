@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp4hal"
+version = "0.0.1"
+description = "CzLabs project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "langchain-community",
+    "langchain-core",
+    "langchain-experimental",
+    "langgraph",
+    "python-dotenv",
+    "fastapi",
+    "uvicorn",
+    "mcp",
+    "langchain-mcp-adapters",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=src --cov-report=term-missing"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
+
+[tool.coverage.report]
+fail_under = 25
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+# A regex preceded with ^/ will apply only to files and directories
+# in the root of the project.
+^/build/
+'''
