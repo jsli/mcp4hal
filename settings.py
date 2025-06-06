@@ -11,5 +11,7 @@ class GlobalSettings(BaseSettings):
 
     cors: bool
 
+    mcp_server_config_path: str
+
 
 global_settings = GlobalSettings()

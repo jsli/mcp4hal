@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://localhost:8881/mcp/sse",
+    "transport": "sse",
+    "name": "计算器",
+    "description": "sse格式的加法计算器"
+  },
+  {
+    "url": "http://localhost:8881/mcp/streamable_http",
+    "transport": "streamable_http",
+    "name": "计算器",
+    "description": "streamable_http格式的加法计算器"
+  }
+]

@@ -19,6 +19,7 @@ dependencies = [
     "mcp",
     "langchain-mcp-adapters",
     "docstring_parser",
+    "pydantic",
 ]
 
 [tool.pytest.ini_options]
