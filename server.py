@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
-from mock.mock_mcp_server import MockMcpServerHttpStreamable, MockMcpServerSse
+from mock.mock_mcp_server import MockMcpServerSse, MockMcpServerHttpStreamable
 from settings import global_settings
 
 _settings = global_settings
