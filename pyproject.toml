@@ -18,6 +18,7 @@ dependencies = [
     "uvicorn",
     "mcp",
     "langchain-mcp-adapters",
+    "docstring_parser",
 ]
 
 [tool.pytest.ini_options]
