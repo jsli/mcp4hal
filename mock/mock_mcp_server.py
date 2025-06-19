@@ -1,7 +1,7 @@
-from core.server_base import McpServerBase
+from mcp_adapter.core import McpServerAdapterBase
 
 
-class MockMcpServerSse(McpServerBase):
+class MockMcpServerSse(McpServerAdapterBase):
 
     name = 'MockMcpServerSse'
 
@@ -9,8 +9,8 @@ class MockMcpServerSse(McpServerBase):
 
     server_type = 'sse'
 
-    @staticmethod
-    def add(a: int, b: int) -> int:
+    # @staticmethod
+    def add(self, a: int, b: int) -> int:
         """Add two numbers"""
         return a + b
 
@@ -25,7 +25,7 @@ class MockMcpServerSse(McpServerBase):
         return a * b
 
 
-class MockMcpServerHttpStreamable(McpServerBase):
+class MockMcpServerHttpStreamable(McpServerAdapterBase):
 
     name = 'MockMcpServerHttpStreamable'
 

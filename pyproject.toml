@@ -5,10 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mcp4hal"
 version = "0.0.1"
-description = "CzLabs project"
+description = "MCP(Model Context Protocol) Hardware Abstract Layer"
+authors = [
+    { name = "Jinsong Li", email = "manson.li3307@gmail.com" }
+]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "langchain",
     "langchain-community",
     "langchain-core",
     "langchain-experimental",
@@ -20,6 +24,9 @@ dependencies = [
     "langchain-mcp-adapters",
     "docstring_parser",
     "pydantic",
+    "paho-mqtt",
+    "mcp-adapter",
+    "fastmcp"
 ]
 
 [tool.pytest.ini_options]
@@ -34,8 +41,8 @@ filterwarnings = [
 [tool.coverage.report]
 fail_under = 25
 
-[tool.hatch.build.targets.wheel]
-packages = ["src"]
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.black]
 line-length = 88
