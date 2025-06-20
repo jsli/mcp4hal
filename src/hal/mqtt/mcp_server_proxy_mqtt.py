@@ -1,6 +1,7 @@
 import json
 import logging
 import threading
+import time
 import uuid
 from typing import Any, Dict, List
 
@@ -41,6 +42,8 @@ class McpServerProxy4Mqtt:
     '''通过mqtt进行toolcall的同步事件'''
 
     tool_call_response_cache: dict[str, Any]
+
+    _thread: threading.Thread
 
     def _on_register(self, topic, payload, client):
         if self.inited is True:
@@ -154,6 +157,8 @@ class McpServerProxy4Mqtt:
          passwd: str = "",
          qos: int = 1,
     ):
+        self._thread = None
+
         self.tool_call_response_event = threading.Event()
         self.tool_call_response_cache = {}
 
@@ -204,7 +209,7 @@ class McpServerProxy4Mqtt:
                 tool_call_response_topic = f'{MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F % self.remote_id}/{tool_call_id}'
 
                 tool = self.remote_tools_map[name]
-                is_async = True if tool is None else tool.is_async
+                is_async = True if tool is None else tool.is_sync
 
                 # 订阅临时主题
                 if is_async:
@@ -223,6 +228,8 @@ class McpServerProxy4Mqtt:
                     logger.debug('waiting for response........')
                     if not self.tool_call_response_event.wait(timeout=60):
                         raise TimeoutError("No response received within timeout")
+
+                    time.sleep(5)
 
                     # 清理临时订阅
                     self.mqtt_client.unsubscribe(tool_call_response_topic)
@@ -259,4 +266,29 @@ class McpServerProxy4Mqtt:
 
     def run(self, host: str = '127.0.0.1', port: int = 8000, mount_path: str = '/mcp', transport = 'streamable-http'):
         if self.mount_server:
-            self.mount_server.run(transport=transport, host=host, port=port, path=mount_path)
+            self.mount_server.run(transport=transport, host=host, port=port, path=mount_path, uvicorn_config={'workers': 8})
+
+    def _thread_main(self) -> None:
+        try:
+            self.run()
+        finally:
+            self._thread = None
+
+    def loop_start(self):
+        """This is part of the threaded client interface. Call this once to
+        start a new thread to process network traffic. This provides an
+        alternative to repeatedly calling `loop()` yourself.
+
+        Under the hood, this will call `loop_forever` in a thread, which means that
+        the thread will terminate if you call `disconnect()`
+        """
+        if self._thread is not None:
+            return MQTTErrorCode.MQTT_ERR_INVAL
+
+        self._sockpairR, self._sockpairW = _socketpair_compat()
+        self._thread_terminate = False
+        self._thread = threading.Thread(target=self._thread_main, name=f"paho-mqtt-client-{self._client_id.decode()}")
+        self._thread.daemon = True
+        self._thread.start()
+
+        return MQTTErrorCode.MQTT_ERR_SUCCESS

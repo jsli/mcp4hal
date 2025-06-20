@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any, Optional, Literal, List, Dict
 
+from mcp import types
 from pydantic import BaseModel
 
 MQTT_TOPIC_PREFIX = 'mcp4hal'
@@ -35,6 +36,10 @@ MCP4HAL_MQTT_QOS = 1
 '''mqtt qos, 送达1次，消息不会丢失，也不会重复'''
 
 
+MCP_WEB_PORT_START = 13307
+'''mcp web server端口的起始点'''
+
+
 class McpMqttToolPayload(BaseModel):
     name: str
 
@@ -42,8 +47,8 @@ class McpMqttToolPayload(BaseModel):
 
     parameters: list[dict[str, Any]]
 
-    is_async: bool = True
-    '''是否异步，异步不需要等待返回'''
+    is_sync: bool = False
+    '''是否同步，异步不需要等待返回'''
 
 
 class McpMqttRegisterPayload(BaseModel):
@@ -100,8 +105,8 @@ class MqttMcpTool:
 
     parameters: List[Dict[str, Any]] = field(default_factory=list)
 
-    is_async: bool = True
-    '''是否异步，异步不需要等待返回'''
+    is_sync: bool = True
+    '''是否同步，异步不需要等待返回'''
 
 
 @dataclass
@@ -113,6 +118,61 @@ class MqttMcpServer:
     description: str
 
     tools: list[MqttMcpTool]
+
+
+@dataclass
+class MqttMcpServerMountConfig:
+    host: str = '0.0.0.0'
+
+    port: int = 8000
+
+    mount_path: str = '/mcp'
+
+    transport = 'streamable-http'
+
+
+@dataclass
+class MqttBrokerConnectionConfig:
+    """mqtt broker连接配置"""
+
+    broker: str
+
+    port: int
+
+    client_id: str
+
+    username: str
+
+    passwd: str
+
+    qos: int
+
+
+def convert_to_mcp_typed_tools(tools: list[MqttMcpTool]):
+    mcp_typed_tools = []
+    for tool in tools:
+        mcp_typed_tools.append(
+            types.Tool(
+                name=tool.name,
+                description=tool.description,
+                inputSchema={
+                    "type": "object",
+                    "properties": {
+                        param["name"]: {
+                            "type": param["type"],
+                            "description": param["description"],
+                            **({"enum": param["enum"]} if "enum" in param else {})
+                        }
+                        for param in tool.parameters
+                    },
+                    "required": [
+                        param["name"]
+                        for param in tool.parameters
+                        if param.get("required", False)
+                    ]
+                }
+            )
+        )
 
 
 def parse_mqtt_topic(topic):

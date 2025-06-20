@@ -1,15 +1,10 @@
-import logging
-
 from core.protocol.mqtt import McpMqttLastWillPayload, MCP4HAL_MQTT_TOPIC_REGISTER_F, MCP4HAL_MQTT_TOPIC_WILL_F, \
     McpMqttRegisterPayload, McpMqttToolPayload, McpMqttToolCallResultPayload, MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F, \
     MCP4HAL_MQTT_TOPIC_TOOLCALL_F
 from hal.mqtt.mqtt_client import MqttClient
+from utils.logger import get_logger
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 client_id = 'mock_client'
 port = 1883
@@ -27,50 +22,52 @@ register_topic = MCP4HAL_MQTT_TOPIC_REGISTER_F % client_id
 tool_call_topic = MCP4HAL_MQTT_TOPIC_TOOLCALL_F % client_id
 tool_call_result_topic = MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F % client_id
 
+tools = {
+    'add': McpMqttToolPayload(
+        name='add',
+        description='计算两个数的和',
+        is_sync=True,
+        parameters=[
+            {
+                'name': 'a',
+                'type': 'int',
+                'required': True,
+                'description': '一个整数',
+            },
+            {
+                'name': 'b',
+                'type': 'int',
+                'required': True,
+                'description': '一个整数',
+            }
+        ],
+    ),
+    'sub': McpMqttToolPayload(
+        name='sub',
+        description='计算两个数的差',
+        is_sync=False,
+        parameters=[
+            {
+                'name': 'a',
+                'type': 'int',
+                'required': True,
+                'description': '一个整数',
+            },
+            {
+                'name': 'b',
+                'type': 'int',
+                'required': True,
+                'description': '一个整数',
+            }
+        ]
+    )
+}
+
 register_payload = McpMqttRegisterPayload(
     uid=client_id,
     name='计算器',
     description='计算器',
-    tools=[
-        McpMqttToolPayload(
-            name='add',
-            description='计算两个数的和',
-            is_async=True,
-            parameters=[
-                {
-                    'name': 'a',
-                    'type': 'int',
-                    'required': True,
-                    'description': '一个整数',
-                },
-                {
-                    'name': 'b',
-                    'type': 'int',
-                    'required': True,
-                    'description': '一个整数',
-                }
-            ],
-        ),
-        McpMqttToolPayload(
-            name='sub',
-            description='计算两个数的差',
-            is_async=False,
-            parameters=[
-                {
-                    'name': 'a',
-                    'type': 'int',
-                    'required': True,
-                    'description': '一个整数',
-                },
-                {
-                    'name': 'b',
-                    'type': 'int',
-                    'required': True,
-                    'description': '一个整数',
-                }
-            ]
-        )
-    ]
+    tools=tools.values()
 )
 
 
@@ -81,15 +78,18 @@ def on_tool_call(topic: str, message: dict, client):
         name = message['name']
         tool_call_id = message['id']
         args = message['args']
+        tool_call_result = ''
         if name == 'add':
             res = int(args['a']) + int(args['b'])
             tool_call_result = McpMqttToolCallResultPayload(tool_call_id=tool_call_id, content=res)
-            mqtt_client.publish(tool_call_result_topic, tool_call_result)
         elif name == 'sub':
             res = int(args['a']) - int(args['b'])
             tool_call_result = McpMqttToolCallResultPayload(tool_call_id=tool_call_id, content=res)
-            mqtt_client.publish(tool_call_result_topic, tool_call_result)
 
+        # 是否返回结果
+        _tool = tools.get(name)
+        if _tool and _tool.is_sync:
+            mqtt_client.publish(tool_call_result_topic, tool_call_result)
 
 mqtt_client = MqttClient(
     broker=broker,

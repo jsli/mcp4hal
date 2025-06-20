@@ -26,7 +26,8 @@ dependencies = [
     "pydantic",
     "paho-mqtt",
     "mcp-adapter",
-    "fastmcp"
+    "fastmcp",
+    "rich"
 ]
 
 [tool.pytest.ini_options]

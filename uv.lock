@@ -904,6 +904,7 @@ dependencies = [
     { name = "paho-mqtt" },
     { name = "pydantic" },
     { name = "python-dotenv" },
+    { name = "rich" },
     { name = "uvicorn" },
 ]
 
@@ -923,6 +924,7 @@ requires-dist = [
     { name = "paho-mqtt" },
     { name = "pydantic" },
     { name = "python-dotenv" },
+    { name = "rich" },
     { name = "uvicorn" },
 ]
 

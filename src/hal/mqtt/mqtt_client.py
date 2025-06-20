@@ -1,15 +1,12 @@
 import json
-import logging
 from typing import Callable, Optional, Any
 
 import paho.mqtt.client as mqtt
 from pydantic import BaseModel
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 class MqttClient:
