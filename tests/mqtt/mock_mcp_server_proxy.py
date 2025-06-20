@@ -10,17 +10,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-
-# proxy_server = McpServerProxy4Mqtt(
-#     broker=broker,
-#     port=port,
-#     client_id=client_id,
-#     username=username,
-#     passwd=passwd,
-#     qos=qos
-# )
-# proxy_server.run()
-
 connection_config = MqttBrokerConnectionConfig(
     client_id = 'mock_server',
     username = 'mqtt_dev',

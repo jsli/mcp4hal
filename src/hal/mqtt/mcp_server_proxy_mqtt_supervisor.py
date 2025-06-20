@@ -1,6 +1,7 @@
 from core.protocol.mqtt import MCP4HAL_MQTT_TOPIC_REGISTER, \
     MCP4HAL_MQTT_TOPIC_UNREGISTER, MqttMcpTool, MqttMcpServer, \
-    MqttBrokerConnectionConfig, parse_mqtt_topic, MqttTopicEnum, MCP_WEB_PORT_START, MqttMcpServerMountConfig
+    MqttBrokerConnectionConfig, parse_mqtt_topic, MqttTopicEnum, MCP_WEB_PORT_START, MqttMcpServerMountConfig, \
+    MQTT_TOPIC_PREFIX
 from hal.mqtt.mqtt_client import MqttClient
 from utils.logger import get_logger
 from .mcp_server_proxy_mqtt_worker import McpServerProxyMqttWorker
@@ -48,7 +49,7 @@ class McpServerProxyMqttSupervisor:
             self._current_port += 1
             mount_config = MqttMcpServerMountConfig(
                 port=self._current_port,
-                mount_path=f'/mcp/{client_id}'
+                mount_path=f'/{MQTT_TOPIC_PREFIX}/{client_id}'
             )
             worker = McpServerProxyMqttWorker.create_worker(
                 connection_config=self._connection_config,
