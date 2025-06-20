@@ -11,7 +11,20 @@ class GlobalSettings(BaseSettings):
 
     cors: bool
 
-    mcp_server_config_path: str
+    app_version: str
+
+    mount_host: str
+
+    # mqtt
+    mqtt_broker: str
+
+    mqtt_port: int
+
+    mqtt_username: str
+
+    mqtt_passwd: str
+
+    mqtt_qos: int
 
 
 global_settings = GlobalSettings()

@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 import mcp.types as types
 from fastmcp import FastMCP
 
-from core.protocol.mqtt import MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT, parse_mqtt_topic, MqttTopicEnum, \
+from core.protocol.mqtt import parse_mqtt_topic, MqttTopicEnum, \
     MqttMcpTool, MqttMcpServer, MCP4HAL_MQTT_TOPIC_TOOLCALL_F, McpMqttToolCallPayload, \
     MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F, MqttBrokerConnectionConfig, MqttMcpServerMountConfig
 from hal.mqtt.mqtt_client import MqttClient
@@ -273,3 +273,9 @@ class McpServerProxyMqttWorker:
         # 设置remote已不可用
         self._clean_remote_server()
         logger.debug(f'2worker stopped! {self._remote_server}')
+
+    def get_mount_config(self):
+        return self._mount_config
+
+    def is_available(self):
+        return self._remote_available

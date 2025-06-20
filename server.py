@@ -1,31 +1,31 @@
-import contextlib
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
+from starlette.requests import Request
+from starlette.responses import RedirectResponse, JSONResponse
 
-from mock.mock_mcp_server import MockMcpServerSse, MockMcpServerHttpStreamable
+from core.protocol.mqtt import MqttBrokerConnectionConfig
+from hal.mqtt import McpServerProxyMqttSupervisor
 from settings import global_settings
-
-_settings = global_settings
 
 
 def init_mcp_servers(_app: FastAPI):
-    mcp_servers = {}
-    base_url = _settings.host_base_url
-
-    sse_server = MockMcpServerSse.mount(app=app, base_url=base_url, mount_path='/mcp/sse/')
-    mcp_servers[sse_server.name] = sse_server
-
-    streamable_http_server = MockMcpServerHttpStreamable.mount(app=app, base_url=base_url, mount_path='/mcp/streamable_http/')
-    mcp_servers[streamable_http_server.name] = streamable_http_server
-
-    return [sse_server, streamable_http_server]
+    connection_config = MqttBrokerConnectionConfig(
+        client_id=global_settings.app_name.lower(),
+        username=global_settings.mqtt_username,
+        passwd=global_settings.mqtt_passwd,
+        broker=global_settings.mqtt_broker,
+        port=global_settings.mqtt_port,
+        qos=global_settings.mqtt_qos,
+    )
+    supervisor = McpServerProxyMqttSupervisor(connection_config=connection_config, mount_host=global_settings.mount_host)
+    _app.state.mcp_server_mqtt_supervisor = supervisor
+    supervisor.start(daemon=False)
+    return supervisor.get_mcp_servers()
 
 
 def create_app(run_mode: str = None, lifespan = None):
-    _app = FastAPI(title='MCP4HAL', version='0.0.1', lifespan=lifespan)
-    if _settings.cors:
+    _app = FastAPI(title=global_settings.app_name, version=global_settings.app_version, lifespan=lifespan)
+    if global_settings.cors:
         _app.add_middleware(
             CORSMiddleware,
             allow_origins=["*"],
@@ -36,20 +36,14 @@ def create_app(run_mode: str = None, lifespan = None):
     return _app
 
 
-@contextlib.asynccontextmanager
-async def lifespan(app: FastAPI):
-    print("FastApi服务启动")
-    mcp_servers = init_mcp_servers(_app=app)
-    async with contextlib.AsyncExitStack() as stack:
-        for server in mcp_servers:
-            if server.server_type == 'streamable_http':
-                # Create a combined lifespan to manage both session managers
-                await stack.enter_async_context(server.mcp_server.session_manager.run())
-        yield
-    print("FastApi服务关闭")
+app = create_app()
+init_mcp_servers(_app=app)
 
 
-app = create_app(lifespan=lifespan)
+@app.get("/list/servers", summary="获取mcp server列表", include_in_schema=False)
+async def list_mcp_servers(request: Request):
+    data = request.app.state.mcp_server_mqtt_supervisor.get_mcp_servers()
+    return JSONResponse(content=data)
 
 
 @app.get("/", summary="swagger 文档", include_in_schema=False)

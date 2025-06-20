@@ -122,6 +122,8 @@ class MqttMcpServer:
 
 @dataclass
 class MqttMcpServerMountConfig:
+    schema: str = 'http'
+
     host: str = '0.0.0.0'
 
     port: int = 8000

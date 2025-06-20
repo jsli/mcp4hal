@@ -23,6 +23,9 @@ class McpServerProxyMqttSupervisor:
 
     _current_port = MCP_WEB_PORT_START
 
+    _mount_host: str
+    '''mcp server挂载的host'''
+
     def _on_register(self, topic, payload, client):
         # note: payload中的uid优先级更高
         client_id, topic_type = parse_mqtt_topic(topic=topic)
@@ -48,6 +51,7 @@ class McpServerProxyMqttSupervisor:
         else:
             self._current_port += 1
             mount_config = MqttMcpServerMountConfig(
+                host=self._mount_host,
                 port=self._current_port,
                 mount_path=f'/{MQTT_TOPIC_PREFIX}/{client_id}'
             )
@@ -84,6 +88,7 @@ class McpServerProxyMqttSupervisor:
 
     def __init__(self,
          connection_config: MqttBrokerConnectionConfig,
+         mount_host: str = '127.0.0.1'
     ):
         self._connection_config = connection_config
         self._mqtt_client = MqttClient(
@@ -100,6 +105,7 @@ class McpServerProxyMqttSupervisor:
         )
         self._worker_map = {}
         self._remote_server = {}
+        self._mount_host = mount_host
 
         self._mqtt_client.connect()
 
@@ -107,3 +113,18 @@ class McpServerProxyMqttSupervisor:
         if self._mqtt_client:
             # 管理所有请求
             self._mqtt_client.loop(daemon=daemon)
+
+    def get_mcp_servers(self):
+        mcp_servers = []
+        for worker in self._worker_map.values():
+            mount_config = worker.get_mount_config()
+            mcp_server = {
+                'url': f'{mount_config.schema}://{mount_config.host}:{mount_config.port}{mount_config.mount_path}',
+                'host': mount_config.host,
+                'port': mount_config.port,
+                'mount_path': mount_config.mount_path,
+                'transport': mount_config.transport,
+                'is_available': worker.is_available(),
+            }
+            mcp_servers.append(mcp_server)
+        return mcp_servers
