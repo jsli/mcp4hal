@@ -45,7 +45,7 @@ class MicropythonMqttClient:
     def on_message(self, topic, payload):
         print(f"收到消息: Topic={topic}, Message={payload}")
         if self.callback:
-            self.callback(topic.decode('utf-8'), json.loads(payload.decode('utf-8')))
+            self.callback(topic, payload)
 
     def connect(self):
         if not self.connected:
@@ -57,6 +57,9 @@ class MicropythonMqttClient:
             self.client.connect()
             self.connected = True
             print(f"已连接到MQTT服务器: {self.mqtt_broker}")
+
+    def set_callback(self, callback):
+        self.callback = callback
 
     def set_last_will(self, will_topic, will_payload):
         """设置遗嘱消息"""

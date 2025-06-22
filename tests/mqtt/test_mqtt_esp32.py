@@ -1,6 +1,6 @@
 import json
-from mqtt_client import MicropythonMqttClient
 
+from mqtt_client import MicropythonMqttClient
 
 MQTT_TOPIC_PREFIX = 'mcp4hal'
 
@@ -113,12 +113,6 @@ will_payload = {
 tool_call_topic = MCP4HAL_MQTT_TOPIC_TOOLCALL_F % CLIENT_ID
 tool_call_result_topic = MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F % CLIENT_ID
 
-
-# 消息回调函数
-def on_message(topic, msg):
-    print(f"收到消息: Topic={topic.decode()}, Message={msg.decode()}")
-
-
 # 主函数
 def main():
     # 初始化MQTT客户端
@@ -129,10 +123,47 @@ def main():
         mqtt_password=MQTT_PASSWD,
         client_id=CLIENT_ID,
         mqtt_qos=1,
-        callback=on_message,
         wifi_ssid=WIFI_SSID,
         wifi_password=WIFI_PASS,
     )
+
+    # 消息回调函数
+    def on_message(topic, msg):
+        print(f"收到消息: Topic={topic.decode()}, Message={msg.decode()}")
+        message = json.loads(msg)
+        topic = topic.decode()
+        if topic == tool_call_topic:
+            name = message['name']
+            tool_call_id = message['id']
+            args = message['args']
+            tool_call_result = ''
+            if name == 'add':
+                res = int(args['a']) + int(args['b'])
+                tool_call_result = {
+                    'status': "success",
+                    'content': res,
+                    'tool_call_id': tool_call_id,
+                }
+            elif name == 'sub':
+                res = int(args['a']) - int(args['b'])
+                tool_call_result = {
+                    'status': "success",
+                    'content': res,
+                    'tool_call_id': tool_call_id,
+                }
+            elif name == 'led':
+                res = int(args['a']) - int(args['b'])
+                tool_call_result = {
+                    'status': "success",
+                    'content': res,
+                    'tool_call_id': tool_call_id,
+                }
+
+            # 是否返回结果
+            _tool = tools.get(name)
+            client.publish(tool_call_result_topic, tool_call_result)
+
+    client.set_callback(on_message)
 
     # 设置遗嘱消息
     client.set_last_will(will_topic=will_topic, will_payload=will_payload)
