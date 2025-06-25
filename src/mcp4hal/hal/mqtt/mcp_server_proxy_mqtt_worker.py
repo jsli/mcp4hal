@@ -6,11 +6,11 @@ from typing import Any, Dict, List
 import mcp.types as types
 from fastmcp import FastMCP
 
-from core.protocol import parse_mqtt_topic, MqttTopicEnum, \
+from mcp4hal.core.protocol import parse_mqtt_topic, MqttTopicEnum, \
     MqttMcpTool, MqttMcpServer, MCP4HAL_MQTT_TOPIC_TOOLCALL_F, McpMqttToolCallPayload, \
     MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F, MqttBrokerConnectionConfig, MqttMcpServerMountConfig
-from hal.mqtt.mqtt_client import MqttClient
-from utils.logger import get_logger
+from mcp4hal.hal.mqtt.mqtt_client import MqttClient
+from mcp4hal.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

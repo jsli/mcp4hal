@@ -1,9 +1,9 @@
-from core.protocol import MCP4HAL_MQTT_TOPIC_REGISTER, \
+from mcp4hal.core.protocol import MCP4HAL_MQTT_TOPIC_REGISTER, \
     MCP4HAL_MQTT_TOPIC_UNREGISTER, MqttMcpTool, MqttMcpServer, \
     MqttBrokerConnectionConfig, parse_mqtt_topic, MqttTopicEnum, MqttMcpServerMountConfig, \
     MQTT_TOPIC_PREFIX
-from hal.mqtt.mqtt_client import MqttClient
-from utils.logger import get_logger
+from mcp4hal.hal.mqtt.mqtt_client import MqttClient
+from mcp4hal.utils.logger import get_logger
 from .mcp_server_proxy_mqtt_worker import McpServerProxyMqttWorker
 
 

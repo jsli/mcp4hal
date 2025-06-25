@@ -1,8 +1,8 @@
-from core.protocol import McpMqttLastWillPayload, MCP4HAL_MQTT_TOPIC_REGISTER_F, MCP4HAL_MQTT_TOPIC_WILL_F, \
+from mcp4hal.core import McpMqttLastWillPayload, MCP4HAL_MQTT_TOPIC_REGISTER_F, MCP4HAL_MQTT_TOPIC_WILL_F, \
     McpMqttRegisterPayload, McpMqttToolPayload, McpMqttToolCallResultPayload, MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F, \
     MCP4HAL_MQTT_TOPIC_TOOLCALL_F
-from hal.mqtt.mqtt_client import MqttClient
-from utils.logger import get_logger
+from mcp4hal.hal.mqtt.mqtt_client import MqttClient
+from mcp4hal.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

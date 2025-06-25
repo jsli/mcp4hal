@@ -1,7 +1,7 @@
 import logging
 
-from core.protocol.mqtt_schema import MqttBrokerConnectionConfig
-from hal.mqtt.mcp_server_proxy_mqtt_supervisor import McpServerProxyMqttSupervisor
+from mcp4hal.core.protocol.mqtt_schema import MqttBrokerConnectionConfig
+from mcp4hal.hal.mqtt.mcp_server_proxy_mqtt_supervisor import McpServerProxyMqttSupervisor
 
 logging.basicConfig(
     level=logging.DEBUG,

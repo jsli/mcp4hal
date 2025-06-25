@@ -4,7 +4,7 @@ from typing import Callable, Optional, Any
 import paho.mqtt.client as mqtt
 from pydantic import BaseModel
 
-from utils.logger import get_logger
+from mcp4hal.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

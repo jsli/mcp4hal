@@ -1,6 +1,6 @@
 import unittest
 
-from hub.registry import McpServerRegistryManager, McpToolRegistryManager
+from mcp4hal.hub import McpServerRegistryManager, McpToolRegistryManager
 
 
 class TestRegistry(unittest.TestCase):
