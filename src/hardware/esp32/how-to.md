@@ -16,3 +16,14 @@ mpremote connect /dev/cu.usbmodem1101 cp /Users/manson/ai/app/physical_agent/mcp
 import mip
 mip.install("umqtt.simple")
 ```
+
+# 3. 如何调试
+```shell
+# 1. 启动服务端：
+/Users/manson/ai/app/physical_agent/mcp4hal/.venv/bin/python /Users/manson/ai/app/physical_agent/mcp4hal/tests/mqtt/mock_mcp_server_proxy.py
+
+
+# 2. 将tests/mqtt/test_mqtt_esp32.py复制到工具中，运行main
+
+# 3. 运行mcp_inspector，测试mcp tool 
+```

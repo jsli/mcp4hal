@@ -1,6 +1,6 @@
-from core.protocol.mqtt import MCP4HAL_MQTT_TOPIC_REGISTER, \
+from core.protocol import MCP4HAL_MQTT_TOPIC_REGISTER, \
     MCP4HAL_MQTT_TOPIC_UNREGISTER, MqttMcpTool, MqttMcpServer, \
-    MqttBrokerConnectionConfig, parse_mqtt_topic, MqttTopicEnum, MCP_WEB_PORT_START, MqttMcpServerMountConfig, \
+    MqttBrokerConnectionConfig, parse_mqtt_topic, MqttTopicEnum, MqttMcpServerMountConfig, \
     MQTT_TOPIC_PREFIX
 from hal.mqtt.mqtt_client import MqttClient
 from utils.logger import get_logger
@@ -21,7 +21,8 @@ class McpServerProxyMqttSupervisor:
     _remote_server: dict[str: MqttMcpServer]
     '''维护一个已连接的map'''
 
-    _current_port = MCP_WEB_PORT_START
+    _current_port = 13307
+    '''mcp web server端口的起始点'''
 
     _mount_host: str
     '''mcp server挂载的host'''
@@ -88,7 +89,8 @@ class McpServerProxyMqttSupervisor:
 
     def __init__(self,
          connection_config: MqttBrokerConnectionConfig,
-         mount_host: str = '127.0.0.1'
+         mount_host: str = '127.0.0.1',
+         port_start: int = 13307
     ):
         self._connection_config = connection_config
         self._mqtt_client = MqttClient(
@@ -106,6 +108,7 @@ class McpServerProxyMqttSupervisor:
         self._worker_map = {}
         self._remote_server = {}
         self._mount_host = mount_host
+        self._current_port = port_start
 
         self._mqtt_client.connect()
 

@@ -1,4 +1,4 @@
-from core.protocol.mqtt import McpMqttLastWillPayload, MCP4HAL_MQTT_TOPIC_REGISTER_F, MCP4HAL_MQTT_TOPIC_WILL_F, \
+from core.protocol import McpMqttLastWillPayload, MCP4HAL_MQTT_TOPIC_REGISTER_F, MCP4HAL_MQTT_TOPIC_WILL_F, \
     McpMqttRegisterPayload, McpMqttToolPayload, McpMqttToolCallResultPayload, MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F, \
     MCP4HAL_MQTT_TOPIC_TOOLCALL_F
 from hal.mqtt.mqtt_client import MqttClient
@@ -102,6 +102,10 @@ mqtt_client = MqttClient(
     will_topic_payload=will_payload,
     qos=qos
 )
+
+# 设置遗嘱消息
+# mqtt_client.set_last_will(will_topic=will_topic, will_payload=will_payload)
+
 mqtt_client.connect()
 mqtt_client.set_message_callback(on_message_callback=on_tool_call)
 

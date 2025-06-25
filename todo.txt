@@ -1,3 +1,12 @@
 1. mcp server聚合后，是否要支持搜索？
 2. 增加定时任务，清理长期不可用的worker
 3. 处理同步调用的返回时间，如果超时则在统一的topic中处理。然后提供一个查询结果的接口，后续通过 toolcall id查询，查询后去除结果缓存。
+4. 板子处理key事件：
+断开连接...
+已断开MQTT连接: 192.168.152.224
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "<stdin>", line 184, in main
+  File "/Users/manson/ai/app/physical_agent/mcp4hal/src/hardware/base/micropython/mcp4hal_mqtt/mqtt_client.py", line 113, in run
+KeyboardInterrupt:
+

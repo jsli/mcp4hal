@@ -1,18 +1,19 @@
 import json
 
 import machine
+
 from mqtt_client import MicropythonMqttClient
 from protocol import MCP4HAL_MQTT_TOPIC_REGISTER_F, MCP4HAL_MQTT_TOPIC_WILL_F, MCP4HAL_MQTT_TOPIC_TOOLCALL_RESULT_F, \
     MCP4HAL_MQTT_TOPIC_TOOLCALL_F, MCP4HAL_MQTT_QOS
 
 # WIFI配置部分
-WIFI_SSID = "ZJJYJ"
+WIFI_SSID = "ZYYJY"
 WIFI_PASS = "qwert123"
 
 # MQTT配置部分
 MQTT_USERNAME = 'mqtt_dev'
-MQTT_PASSWD = 'abcd1234'
-MQTT_BROKER = '192.168.152.224'
+MQTT_PASSWD='abcd1234'
+MQTT_BROKER='192.168.152.224'
 MQTT_PORT = 1883
 MQTT_QOS = MCP4HAL_MQTT_QOS
 
@@ -49,8 +50,8 @@ server_config = {
 register_topic = MCP4HAL_MQTT_TOPIC_REGISTER_F % CLIENT_ID
 register_payload = {
     'uid': CLIENT_ID,
-    **server_config
 }
+register_payload.update(server_config)
 
 will_topic = MCP4HAL_MQTT_TOPIC_WILL_F % CLIENT_ID
 will_payload = {
@@ -106,10 +107,11 @@ def on_tool_call(name, tool_call_id, args):
     # 是否返回结果
     _tool = tools.get(name)
     if _tool and _tool.get('is_sync', False):
-        return {
+        result = {
             'tool_call_id': tool_call_id,
-            **tool_call_result
         }
+        result.update(tool_call_result)
+        return result
     else:
         return None
 
@@ -126,6 +128,7 @@ def main():
         mqtt_qos=1,
         wifi_ssid=WIFI_SSID,
         wifi_password=WIFI_PASS,
+        keepalive=30
     )
 
     # 消息回调函数
@@ -152,3 +155,5 @@ def main():
     client.publish(topic=register_topic, payload=register_payload)
 
     client.run(blocking=True)
+
+main()

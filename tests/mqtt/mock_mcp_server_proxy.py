@@ -1,6 +1,6 @@
 import logging
 
-from core.protocol.mqtt import MqttBrokerConnectionConfig
+from core.protocol.mqtt_schema import MqttBrokerConnectionConfig
 from hal.mqtt.mcp_server_proxy_mqtt_supervisor import McpServerProxyMqttSupervisor
 
 logging.basicConfig(
@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 connection_config = MqttBrokerConnectionConfig(
     client_id = 'mock_server',
     username = 'mqtt_dev',
-    # passwd = '123456',
-    passwd = 'abcd1234',
     # broker = '127.0.0.1',
+    # passwd = '123456',
     broker = '192.168.152.224',
+    passwd = 'abcd1234',
     port = 1883,
     qos = 1,
 )

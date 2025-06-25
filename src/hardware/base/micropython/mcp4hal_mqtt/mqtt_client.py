@@ -1,9 +1,9 @@
-import time
 import json
+import time
 
 import machine
-import network
-from umqtt.simple import MQTTClient
+# from umqtt.simple import MQTTClient
+from umqtt.robust import MQTTClient
 
 from wifi_utils import connect_wifi
 
@@ -20,6 +20,7 @@ class MicropythonMqttClient:
         callback = None,
         wifi_ssid = None,
         wifi_password = None,
+        keepalive = 30,
     ):
         self.wifi_ssid = wifi_ssid
         self.wifi_password = wifi_password
@@ -40,6 +41,7 @@ class MicropythonMqttClient:
             port=self.mqtt_port,
             user=self.mqtt_username,
             password=self.mqtt_password,
+            keepalive=keepalive,
         )
 
     def on_message(self, topic, payload):
@@ -49,10 +51,10 @@ class MicropythonMqttClient:
 
     def connect(self):
         if not self.connected:
-            print(f"连接MQTT服务器: {self.mqtt_broker}")
             if self.wifi_ssid:
                 connect_wifi(self.wifi_ssid, self.wifi_password)
 
+            print(f"连接MQTT服务器: {self.mqtt_broker}")
             self.client.set_callback(self.on_message)
             self.client.connect()
             self.connected = True

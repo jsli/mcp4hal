@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, JSONResponse
 
-from core.protocol.mqtt import MqttBrokerConnectionConfig
+from core.protocol.mqtt_schema import MqttBrokerConnectionConfig
 from hal.mqtt import McpServerProxyMqttSupervisor
 from settings import global_settings
 
